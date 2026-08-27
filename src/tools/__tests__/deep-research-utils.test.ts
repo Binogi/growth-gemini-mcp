@@ -10,7 +10,8 @@
 import { describe, it, expect } from 'vitest'
 import { extractOutputs, reportText } from '../deep-research-utils.js'
 
-const partA = '# Report\n\nFirst half of the report.\n\n'
+const partA = '# Report\n\nFirst half — with “curly quotes” and Ünïcödé.\n\n' // non-ASCII: bytes > chars
+const partABytes = Buffer.byteLength(partA, 'utf8')
 const partB = '## Section 2\n\nSecond half [^1].\n\n[^1]: https://example.org/a'
 
 const steps = [
@@ -45,18 +46,21 @@ describe('extractOutputs', () => {
     expect(output.text).not.toContain('AAAA')
   })
 
-  it('shifts annotation indexes by the preceding text length', () => {
+  it('shifts annotation indexes by the UTF-8 byte length of the preceding text', () => {
+    expect(partABytes).toBeGreaterThan(partA.length) // the fixture must exercise the difference
     const [output] = extractOutputs(steps)
     expect(output.annotations).toEqual([
       {
         type: 'url_citation',
         url: 'https://example.org/a',
-        start_index: partA.length + 15,
-        end_index: partA.length + 26,
+        start_index: partABytes + 15,
+        end_index: partABytes + 26,
       },
     ])
-    const cited = output.text.slice(output.annotations![0].start_index, output.annotations![0].end_index)
-    expect(cited).toBe(partB.slice(15, 26))
+    // The API measures indexes in bytes; slicing the UTF-8 bytes must land on the cited span.
+    const bytes = Buffer.from(output.text, 'utf8')
+    const { start_index, end_index } = output.annotations![0]
+    expect(bytes.subarray(start_index!, end_index!).toString('utf8')).toBe(partB.slice(15, 26))
   })
 
   it('returns an empty list when no model_output text exists', () => {
