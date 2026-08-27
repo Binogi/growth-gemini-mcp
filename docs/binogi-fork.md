@@ -21,6 +21,9 @@ Fork-only packaging commits (never sent upstream):
 - `ci: typecheck, test, and verify dist is fresh` (`.github/workflows/ci.yml`).
 - this document.
 
+Releases so far: `v0.8.1-binogi.1` (2026-08-27, first plugin release), `v0.8.1-binogi.2`
+(2026-08-27, citation indexes shifted in UTF-8 bytes; check-research description corrected).
+
 Upstream PRs opened from this fork: [RLabs-Inc/gemini-mcp#35](https://github.com/RLabs-Inc/gemini-mcp/pull/35).
 
 ## Rules
@@ -53,8 +56,11 @@ git tag v0.8.1-binogi.2                            # bump the -binogi.<n> counte
 git push origin main --tags
 ```
 
-Then bump the tag in each plugin's `package.json`, regenerate its `package-lock.json`
-(`npm install --ignore-scripts --package-lock-only`), and bump the plugin version.
+Then bump the tag in each plugin's `package.json`, regenerate its `package-lock.json` with
+`rm -rf node_modules package-lock.json && npm install --ignore-scripts --package-lock-only`
+(npm keeps an installed git dependency when the spec is a tag, so a stale `node_modules` pins
+the old commit), check `resolved` ends in `git rev-parse <tag>^{commit}`, and bump the plugin
+version.
 
 ### Sync with upstream
 
