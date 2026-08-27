@@ -149,14 +149,16 @@ claude mcp add gemini -s user -- \
 
 ## Development Commands
 
+Node >= 20.18.1 (22 recommended); npm only, bun is not required.
+
 ```bash
-bun install        # Install dependencies
-bun run build      # Build the project
-bun run dev        # Run in development mode (with watch)
-bun run dev -- -v  # Run with verbose logging
-bun run typecheck  # Type check without emitting
-bun run format     # Format code with Prettier
-bun run lint       # Lint code with ESLint
+npm ci             # Install dependencies from package-lock.json
+npm run build      # Clean build into dist/ (dist/ is tracked in this fork, see docs/binogi-fork.md)
+npm run dev        # tsc --watch; run `node --watch dist/index.js` in a second terminal
+npm run typecheck  # Type check without emitting
+npm test           # Run the vitest suite
+npm run format     # Format code with Prettier
+npm run lint       # Lint code with ESLint
 ```
 
 ## Dependencies
