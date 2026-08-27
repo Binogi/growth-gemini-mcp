@@ -1,5 +1,9 @@
 # MCP Server Gemini
 
+> **Binogi fork.** This is `Binogi/growth-gemini-mcp`, a fork of RLabs-Inc/gemini-mcp consumed by the
+> `binogi-research` and `binogi-gemini-lab` Claude Code plugins. `dist/` is tracked and releases are
+> git tags. See [docs/binogi-fork.md](docs/binogi-fork.md) before changing anything here.
+
 A Model Context Protocol (MCP) server for integrating Google's Gemini 3 models with Claude Code, enabling powerful collaboration between both AI systems. Now with a beautiful CLI!
 
 [![npm version](https://badge.fury.io/js/@rlabs-inc%2Fgemini-mcp.svg)](https://www.npmjs.com/package/@rlabs-inc/gemini-mcp)

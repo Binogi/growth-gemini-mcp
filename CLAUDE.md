@@ -10,6 +10,8 @@ This project is an MCP (Model Context Protocol) server that connects Claude to G
 **Package:** @rlabs-inc/gemini-mcp
 **MCP Registry:** io.github.rlabs-inc/gemini-mcp
 
+**Binogi fork:** this checkout is `Binogi/growth-gemini-mcp`. Read `docs/binogi-fork.md` first: `dist/` is tracked, releases are git tags, fixes go upstream via PR.
+
 ## Key Components
 
 - `src/index.ts`: Dual-mode entry point (MCP server or CLI)
