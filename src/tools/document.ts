@@ -16,6 +16,7 @@ import { GoogleGenAI } from '@google/genai'
 import { logger } from '../utils/logger.js'
 import * as fs from 'fs'
 import * as path from 'path'
+import { proModel, flashModel } from '../models.js'
 
 /**
  * Get MIME type from file extension
@@ -76,7 +77,7 @@ export function registerDocumentTool(server: McpServer): void {
         }
 
         const genAI = new GoogleGenAI({ apiKey })
-        const model = process.env.GEMINI_PRO_MODEL || 'gemini-3-pro-preview'
+        const model = proModel()
 
         // Read file
         const fileBuffer = fs.readFileSync(filePath)
@@ -214,7 +215,7 @@ export function registerDocumentTool(server: McpServer): void {
         }
 
         const genAI = new GoogleGenAI({ apiKey })
-        const model = process.env.GEMINI_FLASH_MODEL || 'gemini-3-flash-preview'
+        const model = flashModel()
 
         // Build prompt based on style
         let prompt: string
@@ -309,7 +310,7 @@ export function registerDocumentTool(server: McpServer): void {
         }
 
         const genAI = new GoogleGenAI({ apiKey })
-        const model = process.env.GEMINI_PRO_MODEL || 'gemini-3-pro-preview'
+        const model = proModel()
 
         // Build prompt for table extraction
         let prompt: string

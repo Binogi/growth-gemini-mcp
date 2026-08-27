@@ -15,6 +15,7 @@ import { GoogleGenAI } from '@google/genai'
 import { logger } from '../utils/logger.js'
 import * as fs from 'fs'
 import * as path from 'path'
+import { proModel, flashModel } from '../models.js'
 
 /**
  * Extract image dimensions from PNG or JPEG file
@@ -145,10 +146,7 @@ export function registerImageAnalyzeTool(server: McpServer): void {
         const dimensions = extractImageDimensions(imagePath)
 
         const genAI = new GoogleGenAI({ apiKey })
-        const modelName =
-          model === 'pro'
-            ? process.env.GEMINI_PRO_MODEL || 'gemini-3-pro-preview'
-            : process.env.GEMINI_FLASH_MODEL || 'gemini-3-flash-preview'
+        const modelName = model === 'pro' ? proModel() : flashModel()
 
         const fileSize = fileBuffer.length
         logger.debug(`Image size: ${fileSize} bytes, MIME type: ${mimeType}`)

@@ -18,6 +18,7 @@ import { logger } from '../utils/logger.js'
 import { ensureOutputDir } from '../utils/output-dir.js'
 import * as fs from 'fs'
 import * as path from 'path'
+import { proModel } from '../models.js'
 
 // Interface for code execution result parts
 interface CodeExecutionPart {
@@ -61,7 +62,7 @@ export function registerCodeExecTool(server: McpServer): void {
         }
 
         const genAI = new GoogleGenAI({ apiKey })
-        const model = process.env.GEMINI_PRO_MODEL || 'gemini-3-pro-preview'
+        const model = proModel()
 
         // Build contents with optional data
         const contents: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> = []

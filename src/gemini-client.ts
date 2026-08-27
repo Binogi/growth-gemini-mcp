@@ -15,6 +15,7 @@ import { logger } from './utils/logger.js'
 import { ensureOutputDir } from './utils/output-dir.js'
 import * as fs from 'fs'
 import * as path from 'path'
+import { proModel, flashModel, imageModel, videoModel } from './models.js'
 
 /**
  * Thinking levels for Gemini 3 models
@@ -67,10 +68,10 @@ export async function initGeminiClient(): Promise<void> {
     genAI = new GoogleGenAI({ apiKey })
 
     // Set up models - Gemini 3 defaults (latest preview)
-    proModelName = process.env.GEMINI_PRO_MODEL || 'gemini-3-pro-preview'
-    flashModelName = process.env.GEMINI_FLASH_MODEL || 'gemini-3-flash-preview'
-    imageModelName = process.env.GEMINI_IMAGE_MODEL || 'gemini-3-pro-image-preview'
-    videoModelName = process.env.GEMINI_VIDEO_MODEL || 'veo-2.0-generate-001'
+    proModelName = proModel()
+    flashModelName = flashModel()
+    imageModelName = imageModel()
+    videoModelName = videoModel()
 
     // Set up output directory for generated files (platform-appropriate location)
     outputDir = ensureOutputDir()
@@ -590,8 +591,7 @@ export interface DeepResearchResult {
 // Deep Research agent model. The 12-2025 preview agent is deprecated; the current
 // agents are deep-research-preview-04-2026 (speed) and deep-research-max-preview-04-2026
 // (comprehensiveness). Overridable via env so a future agent rev needs no code change.
-const DEEP_RESEARCH_AGENT =
-  process.env.GEMINI_DEEP_RESEARCH_AGENT || 'deep-research-preview-04-2026'
+const DEEP_RESEARCH_AGENT = process.env.GEMINI_DEEP_RESEARCH_AGENT || 'deep-research-preview-04-2026'
 
 /**
  * Start a deep research task

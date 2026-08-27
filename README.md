@@ -322,7 +322,7 @@ The killer combination for development:
 | `GEMINI_API_KEY`        | Yes      | -                            | Your Google Gemini API key    |
 | `GEMINI_OUTPUT_DIR`     | No       | `./gemini-output`            | Where to save generated files |
 | `GEMINI_MODEL`          | No       | -                            | Override model for init test  |
-| `GEMINI_PRO_MODEL`      | No       | `gemini-3-pro-preview`       | Pro model (Gemini 3)          |
+| `GEMINI_PRO_MODEL`      | No       | `gemini-3.1-pro-preview`     | Pro model (Gemini 3.1)        |
 | `GEMINI_FLASH_MODEL`    | No       | `gemini-3-flash-preview`     | Flash model (Gemini 3)        |
 | `GEMINI_IMAGE_MODEL`    | No       | `gemini-3-pro-image-preview` | Image model (Nano Banana Pro) |
 | `GEMINI_IMAGE_THINKING_LEVEL` | No  | `high`                       | Default thinking level for image generation (minimal, low, medium, high) |

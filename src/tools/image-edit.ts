@@ -17,6 +17,7 @@ import { logger } from '../utils/logger.js'
 import { ensureOutputDir } from '../utils/output-dir.js'
 import * as fs from 'fs'
 import * as path from 'path'
+import { imageModel } from '../models.js'
 
 // Store active image editing sessions
 // The SDK handles thought signatures automatically when using chat sessions
@@ -65,17 +66,12 @@ export function registerImageEditTool(server: McpServer): void {
       thinkingLevel: z
         .enum(['minimal', 'low', 'medium', 'high'])
         .optional()
-        .describe(
-          'Reasoning depth for image generation. Defaults to high if not set.'
-        ),
+        .describe('Reasoning depth for image generation. Defaults to high if not set.'),
       personGeneration: z
         .enum(['ALLOW_ALL', 'ALLOW_ADULT', 'ALLOW_NONE'])
         .optional()
         .describe('Control generation of people in images.'),
-      seed: z
-        .number()
-        .optional()
-        .describe('Seed for reproducible results.'),
+      seed: z.number().optional().describe('Seed for reproducible results.'),
     },
     async ({ prompt, aspectRatio, imageSize, useGoogleSearch, thinkingLevel, personGeneration, seed }) => {
       logger.info(`Starting image edit session: ${prompt.substring(0, 50)}...`)
@@ -87,7 +83,7 @@ export function registerImageEditTool(server: McpServer): void {
         }
 
         const genAI = new GoogleGenAI({ apiKey })
-        const imageModel = process.env.GEMINI_IMAGE_MODEL || 'gemini-3-pro-image-preview'
+        const imageModelName = imageModel()
 
         // Create a chat session for multi-turn editing
         // The SDK handles thought signatures automatically in chat mode
@@ -119,7 +115,7 @@ export function registerImageEditTool(server: McpServer): void {
         }
 
         const chat = genAI.chats.create({
-          model: imageModel,
+          model: imageModelName,
           config: chatConfig,
         })
 

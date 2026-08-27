@@ -8,6 +8,7 @@
 import { parseArgs } from 'node:util'
 import { GoogleGenAI } from '@google/genai'
 import { setupLogger } from '../../utils/logger.js'
+import { proModel } from '../../models.js'
 import { spinner, print, printError, printMuted, t, header } from '../ui/index.js'
 
 // Types for grounding metadata
@@ -132,7 +133,7 @@ export async function searchCommand(argv: string[]): Promise<void> {
     s.start('Searching the web...')
 
     const genAI = new GoogleGenAI({ apiKey })
-    const model = process.env.GEMINI_PRO_MODEL || 'gemini-3-pro-preview'
+    const model = proModel()
 
     // Execute with Google Search tool enabled
     const response = await genAI.models.generateContent({

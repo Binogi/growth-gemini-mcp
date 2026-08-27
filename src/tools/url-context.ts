@@ -15,6 +15,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 import { GoogleGenAI } from '@google/genai'
 import { logger } from '../utils/logger.js'
+import { proModel, flashModel } from '../models.js'
 
 // Types for URL context metadata
 interface UrlMetadata {
@@ -47,7 +48,7 @@ export function registerUrlContextTool(server: McpServer): void {
         }
 
         const genAI = new GoogleGenAI({ apiKey })
-        const model = process.env.GEMINI_PRO_MODEL || 'gemini-3-pro-preview'
+        const model = proModel()
 
         // Build the prompt with URLs
         const urlList = urls.map((url, i) => `${i + 1}. ${url}`).join('\n')
@@ -130,7 +131,7 @@ export function registerUrlContextTool(server: McpServer): void {
         }
 
         const genAI = new GoogleGenAI({ apiKey })
-        const model = process.env.GEMINI_FLASH_MODEL || 'gemini-3-flash-preview'
+        const model = flashModel()
 
         const prompt = aspect
           ? `Compare the ${aspect} from these two URLs:\n1. ${url1}\n2. ${url2}\n\nProvide a detailed comparison highlighting differences and similarities.`
@@ -191,7 +192,7 @@ export function registerUrlContextTool(server: McpServer): void {
         }
 
         const genAI = new GoogleGenAI({ apiKey })
-        const model = process.env.GEMINI_FLASH_MODEL || 'gemini-3-flash-preview'
+        const model = flashModel()
 
         // Build prompt based on data type
         let prompt: string

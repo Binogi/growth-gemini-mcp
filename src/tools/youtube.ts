@@ -14,6 +14,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 import { GoogleGenAI } from '@google/genai'
 import { logger } from '../utils/logger.js'
+import { proModel, flashModel } from '../models.js'
 
 /**
  * Parse time string to seconds (supports formats like "1m30s", "90s", "1:30", "90")
@@ -75,7 +76,7 @@ export function registerYouTubeTool(server: McpServer): void {
         }
 
         const genAI = new GoogleGenAI({ apiKey })
-        const model = process.env.GEMINI_PRO_MODEL || 'gemini-3-pro-preview'
+        const model = proModel()
 
         // Build the video part with optional clipping
         const videoPart: Record<string, unknown> = {
@@ -170,7 +171,7 @@ export function registerYouTubeTool(server: McpServer): void {
         }
 
         const genAI = new GoogleGenAI({ apiKey })
-        const model = process.env.GEMINI_FLASH_MODEL || 'gemini-3-flash-preview'
+        const model = flashModel()
 
         // Build prompt based on style
         let prompt: string

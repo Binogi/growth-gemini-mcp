@@ -14,6 +14,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 import { GoogleGenAI } from '@google/genai'
 import { logger } from '../utils/logger.js'
+import { proModel, flashModel } from '../models.js'
 
 /**
  * Register structured output tools with the MCP server
@@ -51,7 +52,7 @@ export function registerStructuredTool(server: McpServer): void {
         }
 
         const genAI = new GoogleGenAI({ apiKey })
-        const model = process.env.GEMINI_PRO_MODEL || 'gemini-3-pro-preview'
+        const model = proModel()
 
         // Build config
         const config: Record<string, unknown> = {
@@ -136,7 +137,7 @@ export function registerStructuredTool(server: McpServer): void {
         }
 
         const genAI = new GoogleGenAI({ apiKey })
-        const model = process.env.GEMINI_FLASH_MODEL || 'gemini-3-flash-preview'
+        const model = flashModel()
 
         // Build schema based on extraction type
         let schema: Record<string, unknown>

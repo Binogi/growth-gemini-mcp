@@ -33,6 +33,7 @@ import { registerImageAnalyzeTool } from './tools/image-analyze.js'
 // Import Gemini client and logger
 import { initGeminiClient } from './gemini-client.js'
 import { setupLogger, logger, LogLevel } from './utils/logger.js'
+import { proModel } from './models.js'
 
 export async function startMcpServer(argv: string[]): Promise<void> {
   // Parse command line arguments
@@ -103,7 +104,7 @@ For CLI mode, run: gemini --help
   }
 
   // Get model name from environment or use default
-  const defaultModel = 'gemini-3-pro-preview'
+  const defaultModel = proModel()
   const geminiModel = process.env.GEMINI_MODEL || defaultModel
 
   // Log model configuration for debugging
