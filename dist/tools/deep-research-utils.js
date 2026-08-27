@@ -9,6 +9,8 @@
  * `extractOutputs` rebuilds the pre-June-2026 `outputs` shape from `steps`: one
  * `{ type: 'text', text, annotations }` item holding the whole report, with
  * `url_citation` indexes shifted so they still point into the merged text.
+ * The API measures `start_index`/`end_index` in UTF-8 bytes, so the shift is the
+ * byte length of the preceding text, not its `.length` (UTF-16 code units).
  * Downstream consumers that were written against the old shape keep working.
  */
 /**
@@ -25,7 +27,7 @@ export function extractOutputs(steps) {
         for (const item of items) {
             if (item.type !== 'text' || typeof item.text !== 'string')
                 continue;
-            const offset = text.length;
+            const offset = Buffer.byteLength(text, 'utf8');
             for (const annotation of item.annotations || []) {
                 annotations.push({
                     ...annotation,
