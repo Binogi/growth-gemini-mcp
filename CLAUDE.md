@@ -94,7 +94,10 @@ This project is an MCP (Model Context Protocol) server that connects Claude to G
     - `gemini-check-research`: Check research status and get results
     - `gemini-research-followup`: Ask follow-up questions on completed research
     - Note: Research typically takes 5-20 minutes, max 60 minutes
-    - Full response saved to `GEMINI_OUTPUT_DIR` as JSON
+    - Full response saved to `GEMINI_OUTPUT_DIR` as JSON. The file carries `outputs` (derived: one
+      text item with the whole report and `url_citation` annotations, the pre-June-2026 shape) plus
+      the raw Interactions `steps[]` and `rawInteraction`. Do not read `output_text`: it only covers
+      the last `model_output` step and long reports span several.
 
 18. **Image Analysis** (`image-analyze.ts`): *Community contribution by @acreeger*
     - `gemini-analyze-image`: Analyze images with object detection and bounding boxes

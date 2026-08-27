@@ -15,6 +15,7 @@ import { logger } from './utils/logger.js'
 import { ensureOutputDir } from './utils/output-dir.js'
 import * as fs from 'fs'
 import * as path from 'path'
+import { extractOutputs, reportText, type TextOutput } from './tools/deep-research-utils.js'
 import { proModel, flashModel, imageModel, videoModel } from './models.js'
 
 /**
@@ -583,7 +584,7 @@ export async function countTokens(content: string, model: 'pro' | 'flash' = 'fla
 export interface DeepResearchResult {
   id: string
   status: 'pending' | 'processing' | 'completed' | 'failed'
-  outputs?: { text?: string }[]
+  outputs?: TextOutput[]
   error?: string
   savedPath?: string // Path to full response JSON file
 }
@@ -630,6 +631,12 @@ export async function checkDeepResearch(researchId: string): Promise<DeepResearc
     const status = interaction.status || 'unknown'
 
     if (status === 'completed') {
+      // `outputs` is derived from steps[] and keeps the pre-June-2026 file shape
+      // (one text item carrying the whole report plus url_citation annotations).
+      // `output_text` is deliberately not used: it only covers the last
+      // model_output step, and long reports span several.
+      const outputs = extractOutputs(interaction.steps)
+
       // Save the FULL raw response to the output directory
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
       const outputPath = path.join(getOutputDir(), `deep-research-${timestamp}.json`)
@@ -638,29 +645,17 @@ export async function checkDeepResearch(researchId: string): Promise<DeepResearc
         status: interaction.status,
         created: interaction.created,
         agent: interaction.agent,
+        outputs,
         steps: interaction.steps,
         rawInteraction: interaction,
       }
       fs.writeFileSync(outputPath, JSON.stringify(fullResponse, null, 2))
       logger.info(`Full deep research response saved to: ${outputPath}`)
 
-      // Extract the final report text. The June-2026 Interactions API ("steps" schema,
-      // @google/genai >= 2.0.0) exposes the convenience accessor output_text; fall back
-      // to any text emitted across the steps array.
-      const reportText =
-        interaction.output_text ||
-        (interaction.steps || [])
-          .map((step) => {
-            const s = step as { text?: string; content?: { text?: string } }
-            return s.text || s.content?.text
-          })
-          .filter((text): text is string => !!text)
-          .join('\n\n')
-
       return {
         id: researchId,
         status: 'completed',
-        outputs: reportText ? [{ text: reportText }] : [],
+        outputs,
         savedPath: outputPath,
       }
     } else if (status === 'failed' || status === 'cancelled') {
@@ -692,23 +687,9 @@ export async function followUpResearch(researchId: string, question: string): Pr
       previous_interaction_id: researchId,
     })
 
-    // The new Interactions API exposes the convenience accessor output_text.
-    if (interaction.output_text) {
-      return interaction.output_text
-    }
-
-    // Fallback: pull any text emitted across the steps array.
-    const stepTexts = (interaction.steps || [])
-      .map((step) => {
-        const s = step as { text?: string; content?: { text?: string } }
-        return s.text || s.content?.text
-      })
-      .filter((text): text is string => !!text)
-    if (stepTexts.length > 0) {
-      return stepTexts[stepTexts.length - 1]
-    }
-
-    return 'No text response received'
+    // Same derivation as checkDeepResearch: all model_output text, not just the
+    // last step that output_text would return.
+    return reportText(interaction.steps) || 'No text response received'
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     throw new Error(`Research follow-up failed: ${message}`)
