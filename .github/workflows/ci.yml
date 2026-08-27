@@ -1,0 +1,30 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run typecheck
+      - run: npm test
+      # dist/ is tracked (plugins install this repo as a git dependency with
+      # scripts disabled). A clean build must reproduce it exactly.
+      - run: npm run build
+      - name: dist matches src
+        run: |
+          if [ -n "$(git status --porcelain -- dist)" ]; then
+            echo "dist/ is out of date. Run 'npm run build' and commit the result." >&2
+            git status --porcelain -- dist >&2
+            exit 1
+          fi
