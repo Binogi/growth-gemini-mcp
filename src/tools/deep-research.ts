@@ -119,10 +119,10 @@ The Interactions API required for Deep Research may not be available yet in your
   // Check research status
   server.tool(
     'gemini-check-research',
-    'Check a Deep Research task. On the first call that observes completion, writes the full JSON to ' +
-      'GEMINI_OUTPUT_DIR as deep-research-<timestamp>.json (derived outputs[] with the whole report text and ' +
+    'Check a Deep Research task. Every call that finds the task completed writes the full JSON to ' +
+      'GEMINI_OUTPUT_DIR as a new deep-research-<timestamp>.json (derived outputs[] with the whole report text and ' +
       'url_citation annotations, plus raw steps[] and rawInteraction) and returns the report text and the file path. ' +
-      'The file is not written unless this tool is called after completion.',
+      'Nothing is written unless this tool is called after completion; calling it again writes another file.',
     {
       researchId: z.string().describe('The research ID returned from gemini-deep-research'),
     },
