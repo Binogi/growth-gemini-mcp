@@ -98,6 +98,9 @@ This project is an MCP (Model Context Protocol) server that connects Claude to G
       text item with the whole report and `url_citation` annotations, the pre-June-2026 shape) plus
       the raw Interactions `steps[]` and `rawInteraction`. Do not read `output_text`: it only covers
       the last `model_output` step and long reports span several.
+    - The file is written by `gemini-check-research` on the first call that observes completion.
+      The server does not poll in the background and the name is timestamped, so callers poll
+      with `gemini-check-research` rather than watching the directory.
 
 18. **Image Analysis** (`image-analyze.ts`): *Community contribution by @acreeger*
     - `gemini-analyze-image`: Analyze images with object detection and bounding boxes
