@@ -24,7 +24,7 @@ export function registerQueryTool(server: McpServer): void {
         .optional()
         .describe(
           'Reasoning depth: minimal/low for fast responses, medium/high for complex tasks. ' +
-            'Pro supports low/high only. Flash supports all levels. Default is high.'
+            'Pro uses low or high. Flash sends minimal as low, since Gemini 4 rejects minimal. Default is high.'
         ),
     },
     async ({ prompt, model, thinkingLevel }) => {

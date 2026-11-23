@@ -5,14 +5,19 @@
  * (`gemini-3-pro-preview` started returning 404 in August 2026). Keeping the
  * fallbacks here means a retirement is a one-line change instead of a hunt
  * through every tool file. Env vars override at call time.
+ *
+ * GEMINI_DEEP_MODEL and GEMINI_FAST_MODEL name the two text-model slots by role
+ * rather than by Google's tier names, so a new model family needs no rename.
+ * The older GEMINI_PRO_MODEL and GEMINI_FLASH_MODEL still work as fallbacks.
  */
 
-export const DEFAULT_PRO_MODEL = 'gemini-3.1-pro-preview'
-export const DEFAULT_FLASH_MODEL = 'gemini-3-flash-preview'
+export const DEFAULT_PRO_MODEL = 'gemini-4-carbon'
+export const DEFAULT_FLASH_MODEL = 'gemini-4-neon'
 export const DEFAULT_IMAGE_MODEL = 'gemini-3-pro-image-preview'
 export const DEFAULT_VIDEO_MODEL = 'veo-2.0-generate-001'
 
-export const proModel = (): string => process.env.GEMINI_PRO_MODEL || DEFAULT_PRO_MODEL
-export const flashModel = (): string => process.env.GEMINI_FLASH_MODEL || DEFAULT_FLASH_MODEL
+export const proModel = (): string => process.env.GEMINI_DEEP_MODEL || process.env.GEMINI_PRO_MODEL || DEFAULT_PRO_MODEL
+export const flashModel = (): string =>
+  process.env.GEMINI_FAST_MODEL || process.env.GEMINI_FLASH_MODEL || DEFAULT_FLASH_MODEL
 export const imageModel = (): string => process.env.GEMINI_IMAGE_MODEL || DEFAULT_IMAGE_MODEL
 export const videoModel = (): string => process.env.GEMINI_VIDEO_MODEL || DEFAULT_VIDEO_MODEL

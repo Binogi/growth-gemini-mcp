@@ -13,6 +13,14 @@ Fix commits (also offered upstream, see the PR list below):
 - `fix(models)`: pro default `gemini-3.1-pro-preview`; all model defaults in `src/models.ts`.
 - `fix(deep-research)`: `outputs[]` derived from `steps[]` so the whole report survives.
 - `docs(deep-research)`: tool descriptions state when the result JSON is written.
+- `fix(thinking)`: the fast slot sends `low` when `minimal` is requested; Gemini 4 rejects `minimal`.
+  Not yet offered upstream.
+
+Fork-only feature commits (Binogi conventions, not offered upstream):
+
+- `feat(models)`: `GEMINI_DEEP_MODEL` and `GEMINI_FAST_MODEL` name the text-model slots by role,
+  with `GEMINI_PRO_MODEL` and `GEMINI_FLASH_MODEL` kept as fallbacks; defaults `gemini-4-carbon`
+  (deep) and `gemini-4-neon` (fast).
 
 Fork-only packaging commits (never sent upstream):
 

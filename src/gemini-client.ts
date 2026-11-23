@@ -17,6 +17,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { extractOutputs, reportText, type TextOutput } from './tools/deep-research-utils.js'
 import { proModel, flashModel, imageModel, videoModel } from './models.js'
+import { fastThinkingLevel } from './thinking.js'
 
 /**
  * Thinking levels for Gemini 3 models
@@ -110,8 +111,8 @@ export async function initGeminiClient(): Promise<void> {
 
         connected = true
         logger.info(`Successfully connected to Gemini API`)
-        logger.info(`Pro model: ${proModelName}`)
-        logger.info(`Flash model: ${flashModelName}`)
+        logger.info(`Deep model: ${proModelName}`)
+        logger.info(`Fast model: ${flashModelName}`)
         logger.info(`Image model: ${imageModelName}`)
         logger.info(`Video model: ${videoModelName}`)
         logger.info(`Output directory: ${outputDir}`)
@@ -189,11 +190,12 @@ export async function generateWithGeminiFlash(prompt: string, options: GenerateO
     const { thinkingLevel } = options
 
     // Build config with optional thinking level
-    // Note: Gemini 3 Flash supports all thinking levels
+    // Gemini 4 rejects 'minimal'; fastThinkingLevel sends 'low' in its place
     const config: Record<string, unknown> = {}
     if (thinkingLevel) {
-      config.thinkingConfig = { thinkingLevel }
-      logger.debug(`Using thinking level: ${thinkingLevel}`)
+      const fastLevel = fastThinkingLevel(thinkingLevel)
+      config.thinkingConfig = { thinkingLevel: fastLevel }
+      logger.debug(`Using thinking level: ${fastLevel} (requested: ${thinkingLevel})`)
     }
 
     const response = await genAI.models.generateContent({
