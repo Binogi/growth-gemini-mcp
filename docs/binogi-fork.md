@@ -14,7 +14,8 @@ Fix commits (also offered upstream, see the PR list below):
 - `fix(deep-research)`: `outputs[]` derived from `steps[]` so the whole report survives.
 - `docs(deep-research)`: tool descriptions state when the result JSON is written.
 - `fix(thinking)`: the fast slot sends `low` when `minimal` is requested; Gemini 4 rejects `minimal`.
-  Not yet offered upstream.
+  Upstream branch `fix/thinking-minimal-fast-slot` (on top of `upstream/main`, without `dist/`);
+  upstream PR not opened yet.
 
 Fork-only feature commits (Binogi conventions, not offered upstream):
 
@@ -30,7 +31,9 @@ Fork-only packaging commits (never sent upstream):
 - this document.
 
 Releases so far: `v0.8.1-binogi.1` (2026-08-27, first plugin release), `v0.8.1-binogi.2`
-(2026-08-27, citation indexes shifted in UTF-8 bytes; check-research description corrected).
+(2026-08-27, citation indexes shifted in UTF-8 bytes; check-research description corrected),
+`v0.8.1-binogi.3` (2026-11-23, deep and fast model variables, Gemini 4 defaults, `minimal` sent
+as `low` on the fast slot).
 
 Upstream PRs opened from this fork: [RLabs-Inc/gemini-mcp#35](https://github.com/RLabs-Inc/gemini-mcp/pull/35).
 

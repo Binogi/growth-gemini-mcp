@@ -460,7 +460,7 @@ If you must use a proxy to establish a connection to gemini, replace `xxxx` with
 ### Rate Limits (429 Errors)
 
 If you're hitting rate limits on the free tier:
-- Set `GEMINI_MODEL=gemini-4-hydrogen` for the startup test; Hydrogen is the only Gemini 4 model on the free tier
+- On a free-tier key, set `GEMINI_DEEP_MODEL`, `GEMINI_FAST_MODEL`, and `GEMINI_MODEL` (the startup test) to `gemini-4-hydrogen`. Hydrogen is the only Gemini 4 model on the free tier, and the defaults (Carbon and Neon) fail on it
 - Or upgrade to a paid plan
 
 ### Connection Issues
