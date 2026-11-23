@@ -16,14 +16,14 @@ import { logger } from './utils/logger.js';
 // HTTP_PROXY / HTTPS_PROXY. We manually inject a ProxyAgent as the global
 // undici dispatcher so all downstream network calls (including @google/genai)
 // go through the proxy, which is essential for developers behind firewalls.
-import { createRequire } from 'node:module';
+// Static import so the single-file bundle (scripts/bundle.mjs) includes undici; a runtime
+// require() is invisible to the bundler and fails when no node_modules sits next to the bundle.
+import { ProxyAgent } from 'undici';
 (function setupGlobalProxy() {
     const proxyUrl = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
     if (!proxyUrl)
         return;
     try {
-        const req = createRequire(import.meta.url);
-        const { ProxyAgent } = req('undici');
         const dispatcher = new ProxyAgent(proxyUrl);
         globalThis[Symbol.for('undici.globalDispatcher.1')] = dispatcher;
         logger.info(`[Proxy] Detected HTTP_PROXY, global proxy agent injected.`);
