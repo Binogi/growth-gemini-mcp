@@ -16,6 +16,7 @@ import { logger } from '../utils/logger.js'
 import * as fs from 'fs'
 import * as path from 'path'
 import { proModel, flashModel } from '../models.js'
+import { fastThinkingLevel } from '../thinking.js'
 
 /**
  * Extract image dimensions from PNG or JPEG file
@@ -121,7 +122,7 @@ export function registerImageAnalyzeTool(server: McpServer): void {
         .optional()
         .describe(
           'Reasoning depth: minimal/low for fast responses, medium/high for complex analysis. ' +
-            'Pro supports low/high only. Flash supports all levels. Default: high'
+            'Pro uses low or high. Flash sends minimal as low, since Gemini 4 rejects minimal. Default: high'
         ),
       mediaResolution: z
         .enum(['low', 'medium', 'high'])
@@ -211,7 +212,7 @@ If you cannot detect specific objects or bounding boxes are not applicable, retu
                 ? thinkingLevel === 'minimal' || thinkingLevel === 'low'
                   ? 'low'
                   : 'high'
-                : thinkingLevel
+                : fastThinkingLevel(thinkingLevel)
             config.thinkingConfig = { thinkingLevel: effectiveLevel }
             logger.debug(
               `Using thinking level: ${effectiveLevel}${model === 'pro' && effectiveLevel !== thinkingLevel ? ` (requested: ${thinkingLevel})` : ''}`
@@ -284,7 +285,7 @@ If you cannot detect specific objects or bounding boxes are not applicable, retu
                 ? thinkingLevel === 'minimal' || thinkingLevel === 'low'
                   ? 'low'
                   : 'high'
-                : thinkingLevel
+                : fastThinkingLevel(thinkingLevel)
             inlineConfig.thinkingConfig = { thinkingLevel: effectiveLevel }
             logger.debug(
               `Using thinking level: ${effectiveLevel}${model === 'pro' && effectiveLevel !== thinkingLevel ? ` (requested: ${thinkingLevel})` : ''}`
