@@ -14,7 +14,7 @@ import { logger } from '../utils/logger.js';
 import * as fs from 'fs';
 import * as path from 'path';
 import { proModel, flashModel } from '../models.js';
-import { fastThinkingLevel } from '../thinking.js';
+import { fastThinkingLevel, describeThinkingLevel } from '../thinking.js';
 /**
  * Extract image dimensions from PNG or JPEG file
  */
@@ -182,7 +182,7 @@ If you cannot detect specific objects or bounding boxes are not applicable, retu
                             : 'high'
                         : fastThinkingLevel(thinkingLevel);
                     config.thinkingConfig = { thinkingLevel: effectiveLevel };
-                    logger.debug(`Using thinking level: ${effectiveLevel}${model === 'pro' && effectiveLevel !== thinkingLevel ? ` (requested: ${thinkingLevel})` : ''}`);
+                    logger.debug(`Using thinking level: ${describeThinkingLevel(effectiveLevel, thinkingLevel)}`);
                 }
                 // Add structured output for object detection
                 if (detectObjects) {
@@ -248,7 +248,7 @@ If you cannot detect specific objects or bounding boxes are not applicable, retu
                             : 'high'
                         : fastThinkingLevel(thinkingLevel);
                     inlineConfig.thinkingConfig = { thinkingLevel: effectiveLevel };
-                    logger.debug(`Using thinking level: ${effectiveLevel}${model === 'pro' && effectiveLevel !== thinkingLevel ? ` (requested: ${thinkingLevel})` : ''}`);
+                    logger.debug(`Using thinking level: ${describeThinkingLevel(effectiveLevel, thinkingLevel)}`);
                 }
                 // Add structured output for object detection
                 if (detectObjects) {

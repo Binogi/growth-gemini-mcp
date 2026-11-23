@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { fastThinkingLevel } from './thinking.js'
+import { fastThinkingLevel, describeThinkingLevel } from './thinking.js'
 
 describe('fastThinkingLevel', () => {
   it('sends low when minimal is requested', () => {
@@ -17,5 +17,15 @@ describe('fastThinkingLevel', () => {
     for (const level of ['low', 'medium', 'high'] as const) {
       expect(fastThinkingLevel(level)).toBe(level)
     }
+  })
+})
+
+describe('describeThinkingLevel', () => {
+  it('names the requested level when it was remapped', () => {
+    expect(describeThinkingLevel('low', 'minimal')).toBe('low (requested: minimal)')
+  })
+
+  it('names only the level when nothing was remapped', () => {
+    expect(describeThinkingLevel('high', 'high')).toBe('high')
   })
 })
