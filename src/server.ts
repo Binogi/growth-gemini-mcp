@@ -33,7 +33,7 @@ import { registerImageAnalyzeTool } from './tools/image-analyze.js'
 // Import Gemini client and logger
 import { initGeminiClient } from './gemini-client.js'
 import { setupLogger, logger, LogLevel } from './utils/logger.js'
-import { proModel } from './models.js'
+import { proModel, flashModel } from './models.js'
 
 export async function startMcpServer(argv: string[]): Promise<void> {
   // Parse command line arguments
@@ -78,8 +78,8 @@ Environment Variables:
   VERBOSE          (optional) Set to "true" to enable verbose logging
   QUIET            (optional) Set to "true" to enable quiet mode
   GEMINI_MODEL     (optional) Default Gemini model to use
-  GEMINI_PRO_MODEL (optional) Specify Pro model variant
-  GEMINI_FLASH_MODEL (optional) Specify Flash model variant
+  GEMINI_DEEP_MODEL (optional) Model for deep work (legacy name: GEMINI_PRO_MODEL)
+  GEMINI_FAST_MODEL (optional) Model for fast work (legacy name: GEMINI_FLASH_MODEL)
   GEMINI_ENABLED_TOOLS (optional) Comma-separated list of tool groups to load
   GEMINI_TOOL_PRESET   (optional) Preset profile: minimal, text, image, research, media, full
 
@@ -110,8 +110,8 @@ For CLI mode, run: gemini --help
   // Log model configuration for debugging
   logger.debug(`Model configuration:
   - GEMINI_MODEL: ${process.env.GEMINI_MODEL || '(not set, using default)'}
-  - GEMINI_PRO_MODEL: ${process.env.GEMINI_PRO_MODEL || '(not set, using default)'}
-  - GEMINI_FLASH_MODEL: ${process.env.GEMINI_FLASH_MODEL || '(not set, using default)'}`)
+  - deep model (GEMINI_DEEP_MODEL, legacy GEMINI_PRO_MODEL): ${proModel()}
+  - fast model (GEMINI_FAST_MODEL, legacy GEMINI_FLASH_MODEL): ${flashModel()}`)
 
   // Log tool configuration
   const enabledGroups = getEnabledToolGroups()

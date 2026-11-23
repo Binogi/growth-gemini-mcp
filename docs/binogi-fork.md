@@ -14,6 +14,12 @@ Fix commits (also offered upstream, see the PR list below):
 - `fix(deep-research)`: `outputs[]` derived from `steps[]` so the whole report survives.
 - `docs(deep-research)`: tool descriptions state when the result JSON is written.
 
+Fork-only feature commits (Binogi conventions, not offered upstream):
+
+- `feat(models)`: `GEMINI_DEEP_MODEL` and `GEMINI_FAST_MODEL` name the text-model slots by role,
+  with `GEMINI_PRO_MODEL` and `GEMINI_FLASH_MODEL` kept as fallbacks; defaults `gemini-4-carbon`
+  (deep) and `gemini-4-neon` (fast).
+
 Fork-only packaging commits (never sent upstream):
 
 - `build: run scripts and hooks with npm instead of bun` (npm scripts, `.npmrc`, engines, lockfile).

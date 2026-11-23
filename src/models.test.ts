@@ -32,20 +32,45 @@ describe('model defaults', () => {
     }
   })
 
-  it('resolves defaults when no env override is set', () => {
+  const clearTextModelEnv = () => {
+    delete process.env.GEMINI_DEEP_MODEL
+    delete process.env.GEMINI_FAST_MODEL
     delete process.env.GEMINI_PRO_MODEL
     delete process.env.GEMINI_FLASH_MODEL
+  }
+
+  it('resolves defaults when no env override is set', () => {
+    clearTextModelEnv()
     expect(proModel()).toBe(DEFAULT_PRO_MODEL)
     expect(flashModel()).toBe(DEFAULT_FLASH_MODEL)
   })
 
   it('honours env overrides at call time', () => {
-    process.env.GEMINI_PRO_MODEL = 'pro-override'
-    process.env.GEMINI_FLASH_MODEL = 'flash-override'
+    clearTextModelEnv()
+    process.env.GEMINI_DEEP_MODEL = 'deep-override'
+    process.env.GEMINI_FAST_MODEL = 'fast-override'
     process.env.GEMINI_IMAGE_MODEL = 'image-override'
-    expect(proModel()).toBe('pro-override')
-    expect(flashModel()).toBe('flash-override')
+    expect(proModel()).toBe('deep-override')
+    expect(flashModel()).toBe('fast-override')
     expect(imageModel()).toBe('image-override')
+  })
+
+  it('falls back to the legacy pro and flash names', () => {
+    clearTextModelEnv()
+    process.env.GEMINI_PRO_MODEL = 'legacy-pro'
+    process.env.GEMINI_FLASH_MODEL = 'legacy-flash'
+    expect(proModel()).toBe('legacy-pro')
+    expect(flashModel()).toBe('legacy-flash')
+  })
+
+  it('prefers the deep and fast names over the legacy names', () => {
+    clearTextModelEnv()
+    process.env.GEMINI_DEEP_MODEL = 'deep-override'
+    process.env.GEMINI_FAST_MODEL = 'fast-override'
+    process.env.GEMINI_PRO_MODEL = 'legacy-pro'
+    process.env.GEMINI_FLASH_MODEL = 'legacy-flash'
+    expect(proModel()).toBe('deep-override')
+    expect(flashModel()).toBe('fast-override')
   })
 
   it('keeps every text-model default out of the tool files', () => {
@@ -56,7 +81,7 @@ describe('model defaults', () => {
         const text = fs.readFileSync(file, 'utf8')
         return (
           RETIRED.some((id) => text.includes(id)) ||
-          /process\.env\.GEMINI_(PRO|FLASH|IMAGE|VIDEO)_MODEL\s*\|\|\s*'(gemini|veo)-/.test(text)
+          /process\.env\.GEMINI_(DEEP|FAST|PRO|FLASH|IMAGE|VIDEO)_MODEL\s*\|\|\s*'(gemini|veo)-/.test(text)
         )
       })
       .map((file) => path.relative(srcDir, file))

@@ -110,8 +110,8 @@ export async function initGeminiClient(): Promise<void> {
 
         connected = true
         logger.info(`Successfully connected to Gemini API`)
-        logger.info(`Pro model: ${proModelName}`)
-        logger.info(`Flash model: ${flashModelName}`)
+        logger.info(`Deep model: ${proModelName}`)
+        logger.info(`Fast model: ${flashModelName}`)
         logger.info(`Image model: ${imageModelName}`)
         logger.info(`Video model: ${videoModelName}`)
         logger.info(`Output directory: ${outputDir}`)
