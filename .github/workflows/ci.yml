@@ -18,13 +18,16 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npm run typecheck
       - run: npm test
-      # dist/ is tracked (plugins install this repo as a git dependency with
-      # scripts disabled). A clean build must reproduce it exactly.
+      # dist/ and bundle/ are tracked. The Claude Code plugins ship
+      # bundle/gemini-mcp.mjs as a single file (docs/binogi-fork.md), so a clean
+      # build must reproduce both exactly.
       - run: npm run build
-      - name: dist matches src
+      - name: dist and bundle match src
         run: |
-          if [ -n "$(git status --porcelain -- dist)" ]; then
-            echo "dist/ is out of date. Run 'npm run build' and commit the result." >&2
-            git status --porcelain -- dist >&2
+          if [ -n "$(git status --porcelain -- dist bundle)" ]; then
+            echo "dist/ or bundle/ is out of date. Run 'npm run build' and commit the result." >&2
+            git status --porcelain -- dist bundle >&2
             exit 1
           fi
+      - name: bundle runs with no node_modules
+        run: scripts/smoke-bundle.sh

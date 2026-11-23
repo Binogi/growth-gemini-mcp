@@ -3,4 +3,5 @@
 
 # Ignore generated/build output
 dist/
+bundle/
 node_modules/

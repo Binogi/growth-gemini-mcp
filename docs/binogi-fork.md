@@ -23,12 +23,14 @@ Packaging commits:
 - `build: run scripts and hooks with npm instead of bun` (npm scripts, `.npmrc`, engines, lockfile).
 - `build: track dist for git-dependency installs` (`dist/` is committed).
 - `ci: typecheck, test, and verify dist is fresh` (`.github/workflows/ci.yml`).
+- `build: ship the server as one bundled file` (`scripts/bundle.mjs`, `bundle/` is committed,
+  `scripts/smoke-bundle.sh` in CI; `undici` imported statically so the bundle carries it).
 - this document.
 
 Releases so far: `v0.8.1-binogi.1` (2026-08-27, first plugin release), `v0.8.1-binogi.2`
 (2026-08-27, citation indexes shifted in UTF-8 bytes; check-research description corrected),
 `v0.8.1-binogi.3` (2026-11-23, deep and fast model variables, Gemini 4 defaults, `minimal` sent
-as `low` on the fast slot).
+as `low` on the fast slot), `v0.8.1-binogi.4` (2026-11-23, single-file bundle for the plugins).
 
 [RLabs-Inc/gemini-mcp#35](https://github.com/RLabs-Inc/gemini-mcp/pull/35) predates the rule against
 upstream PRs and is left open; its changes are already on this fork's `main`.
@@ -36,9 +38,12 @@ upstream PRs and is left open; its changes are already on this fork's `main`.
 ## Rules
 
 - The npm package name stays `@rlabs-inc/gemini-mcp`. Never publish from this fork; the plugins
-  consume git tags.
-- `dist/` is tracked. Every commit that changes `src/` rebuilds and commits `dist/` (CI fails
-  otherwise). `npm run build` is a clean build.
+  copy the bundle from a tag.
+- `dist/` and `bundle/` are tracked. Every commit that changes `src/` or the dependencies runs
+  `npm run build` and commits both (CI fails otherwise). The build is clean and deterministic.
+- Load packages with static imports or literal dynamic imports only. The bundler cannot see a
+  runtime `require()`, so that package is missing from the bundle; `src/bundle.test.ts` fails on
+  one.
 - No PRs to `RLabs-Inc/gemini-mcp`. Every change goes through a PR to this fork's `main`. Upstream
   changes still come in through the sync recipe below.
 - Tags are `v<upstream package version>-binogi.<n>`, for example `v0.8.1-binogi.1`. A tag is a
@@ -46,11 +51,15 @@ upstream PRs and is left open; its changes are already on this fork's `main`.
 
 ## How the plugins consume this repo
 
-Each plugin has a `package.json` with
-`"@rlabs-inc/gemini-mcp": "github:Binogi/growth-gemini-mcp#<tag>"`, a lockfile, and an `.npmrc`
-(`allow-git=root`, `legacy-peer-deps=true`). Claude Code runs `npm ci --ignore-scripts` in the
-plugin cache on install, so no build happens on the developer's machine; the plugin then starts
-`node ${CLAUDE_PLUGIN_ROOT}/node_modules/@rlabs-inc/gemini-mcp/dist/index.js`.
+Each plugin carries a copy of `bundle/gemini-mcp.mjs` and `bundle/THIRD-PARTY-LICENSES.txt` from
+a tag, in its `server/` directory, and starts `node ${CLAUDE_PLUGIN_ROOT}/server/gemini-mcp.mjs`.
+The plugins have no `package.json`, so Claude Code installs nothing and the developer needs only
+Node 20 or later.
+
+Until 2026-11-23 the plugins listed this repo as a git dependency and let Claude Code install it.
+Claude Code 2.1.330 refuses that: `claude plugin list` reports "its package-lock.json has a
+dependency that is not a registry package and version range", and the plugin starts with no
+server. A fresh install of the old 1.0.0 plugins fails the same way.
 
 ## Recipes
 
@@ -58,16 +67,14 @@ plugin cache on install, so no build happens on the developer's machine; the plu
 
 ```bash
 npm ci && npm run typecheck && npm test
-npm run build && git status --porcelain -- dist   # must be empty, else commit dist first
-git tag v0.8.1-binogi.2                            # bump the -binogi.<n> counter
-git push origin main --tags
+npm run build && git status --porcelain -- dist bundle   # must be empty, else commit first
+scripts/smoke-bundle.sh
+git tag v0.8.1-binogi.4                                  # bump the -binogi.<n> counter
+git push origin v0.8.1-binogi.4
 ```
 
-Then bump the tag in each plugin's `package.json`, regenerate its `package-lock.json` with
-`rm -rf node_modules package-lock.json && npm install --ignore-scripts --package-lock-only`
-(npm keeps an installed git dependency when the spec is a tag, so a stale `node_modules` pins
-the old commit), check `resolved` ends in `git rev-parse <tag>^{commit}`, and bump the plugin
-version.
+Then, in `Binogi/claude-plugins`, run `scripts/vendor-gemini-mcp.sh <tag>` and follow that repo's
+release checklist.
 
 ### Sync with upstream
 
