@@ -3,27 +3,22 @@
 This repository is `Binogi/growth-gemini-mcp`, a fork of
 [`RLabs-Inc/gemini-mcp`](https://github.com/RLabs-Inc/gemini-mcp) maintained by the growth team.
 It exists so that Binogi's Claude Code plugins (`binogi-research`, `binogi-gemini-lab` in
-`Binogi/claude-plugins`) can install a known-good build of the server, and so that fixes we need
-can ship before upstream merges them.
+`Binogi/claude-plugins`) can install a known-good build of the server, and so that the fixes and
+features we need ship on our schedule. Changes land only here; nothing is sent upstream.
 
 ## What differs from upstream
 
-Fix commits (also offered upstream, see the PR list below):
+Fix and feature commits:
 
 - `fix(models)`: pro default `gemini-3.1-pro-preview`; all model defaults in `src/models.ts`.
 - `fix(deep-research)`: `outputs[]` derived from `steps[]` so the whole report survives.
 - `docs(deep-research)`: tool descriptions state when the result JSON is written.
 - `fix(thinking)`: the fast slot sends `low` when `minimal` is requested; Gemini 4 rejects `minimal`.
-  Upstream branch `fix/thinking-minimal-fast-slot` (on top of `upstream/main`, without `dist/`);
-  upstream PR not opened yet.
-
-Fork-only feature commits (Binogi conventions, not offered upstream):
-
 - `feat(models)`: `GEMINI_DEEP_MODEL` and `GEMINI_FAST_MODEL` name the text-model slots by role,
   with `GEMINI_PRO_MODEL` and `GEMINI_FLASH_MODEL` kept as fallbacks; defaults `gemini-4-carbon`
   (deep) and `gemini-4-neon` (fast).
 
-Fork-only packaging commits (never sent upstream):
+Packaging commits:
 
 - `build: run scripts and hooks with npm instead of bun` (npm scripts, `.npmrc`, engines, lockfile).
 - `build: track dist for git-dependency installs` (`dist/` is committed).
@@ -35,7 +30,8 @@ Releases so far: `v0.8.1-binogi.1` (2026-08-27, first plugin release), `v0.8.1-b
 `v0.8.1-binogi.3` (2026-11-23, deep and fast model variables, Gemini 4 defaults, `minimal` sent
 as `low` on the fast slot).
 
-Upstream PRs opened from this fork: [RLabs-Inc/gemini-mcp#35](https://github.com/RLabs-Inc/gemini-mcp/pull/35).
+[RLabs-Inc/gemini-mcp#35](https://github.com/RLabs-Inc/gemini-mcp/pull/35) predates the rule against
+upstream PRs and is left open; its changes are already on this fork's `main`.
 
 ## Rules
 
@@ -43,8 +39,8 @@ Upstream PRs opened from this fork: [RLabs-Inc/gemini-mcp#35](https://github.com
   consume git tags.
 - `dist/` is tracked. Every commit that changes `src/` rebuilds and commits `dist/` (CI fails
   otherwise). `npm run build` is a clean build.
-- Fix commits that could apply upstream go on their own branch and PR first; packaging commits
-  stay on `main` only.
+- No PRs to `RLabs-Inc/gemini-mcp`. Every change goes through a PR to this fork's `main`. Upstream
+  changes still come in through the sync recipe below.
 - Tags are `v<upstream package version>-binogi.<n>`, for example `v0.8.1-binogi.1`. A tag is a
   release: the plugins pin one.
 
@@ -76,14 +72,17 @@ version.
 ### Sync with upstream
 
 ```bash
-git fetch upstream
-git rebase upstream/main          # or merge, if the fix branch has been merged upstream
+git fetch --multiple origin upstream
+git switch -c <initials>.dev.upstream-sync origin/main
+git merge upstream/main
 npm ci && npm run build && npm test
 git add dist && git commit -m "build: rebuild dist after upstream sync"
-git push --force-with-lease origin main   # only if you rebased
+git push -u origin HEAD            # then open a PR to main
 ```
 
-Drop fork fix commits that upstream has merged. Keep the packaging commits.
+Merge, never rebase: `main` carries the release tags the plugins pin, and a rebase would leave
+them off the branch. If upstream fixed something the fork already fixed, keep one version while
+resolving the merge. Keep the packaging commits.
 
 ### Local development
 
