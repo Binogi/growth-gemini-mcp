@@ -44801,11 +44801,12 @@ var init_models = __esm({
 });
 
 // dist/thinking.js
-var fastThinkingLevel;
+var fastThinkingLevel, describeThinkingLevel;
 var init_thinking = __esm({
   "dist/thinking.js"() {
     "use strict";
     fastThinkingLevel = (level) => level === "minimal" ? "low" : level;
+    describeThinkingLevel = (effective, requested) => effective === requested ? effective : `${effective} (requested: ${requested})`;
   }
 });
 
@@ -90677,7 +90678,7 @@ If you cannot detect specific objects or bounding boxes are not applicable, retu
         if (thinkingLevel) {
           const effectiveLevel = model === "pro" ? thinkingLevel === "minimal" || thinkingLevel === "low" ? "low" : "high" : fastThinkingLevel(thinkingLevel);
           config.thinkingConfig = { thinkingLevel: effectiveLevel };
-          logger.debug(`Using thinking level: ${effectiveLevel}${model === "pro" && effectiveLevel !== thinkingLevel ? ` (requested: ${thinkingLevel})` : ""}`);
+          logger.debug(`Using thinking level: ${describeThinkingLevel(effectiveLevel, thinkingLevel)}`);
         }
         if (detectObjects) {
           config.responseMimeType = "application/json";
@@ -90734,7 +90735,7 @@ If you cannot detect specific objects or bounding boxes are not applicable, retu
         if (thinkingLevel) {
           const effectiveLevel = model === "pro" ? thinkingLevel === "minimal" || thinkingLevel === "low" ? "low" : "high" : fastThinkingLevel(thinkingLevel);
           inlineConfig.thinkingConfig = { thinkingLevel: effectiveLevel };
-          logger.debug(`Using thinking level: ${effectiveLevel}${model === "pro" && effectiveLevel !== thinkingLevel ? ` (requested: ${thinkingLevel})` : ""}`);
+          logger.debug(`Using thinking level: ${describeThinkingLevel(effectiveLevel, thinkingLevel)}`);
         }
         if (detectObjects) {
           inlineConfig.responseMimeType = "application/json";

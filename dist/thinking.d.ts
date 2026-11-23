@@ -6,3 +6,5 @@
  * therefore sends 'low' in its place, which every current text model accepts.
  */
 export declare const fastThinkingLevel: <T extends string>(level: T) => T | "low";
+/** Log text for a thinking level, naming the requested level whenever a slot remapped it. */
+export declare const describeThinkingLevel: (effective: string, requested: string) => string;

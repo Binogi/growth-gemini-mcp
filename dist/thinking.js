@@ -6,3 +6,5 @@
  * therefore sends 'low' in its place, which every current text model accepts.
  */
 export const fastThinkingLevel = (level) => (level === 'minimal' ? 'low' : level);
+/** Log text for a thinking level, naming the requested level whenever a slot remapped it. */
+export const describeThinkingLevel = (effective, requested) => effective === requested ? effective : `${effective} (requested: ${requested})`;

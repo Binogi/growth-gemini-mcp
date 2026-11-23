@@ -7,3 +7,7 @@
  */
 
 export const fastThinkingLevel = <T extends string>(level: T): T | 'low' => (level === 'minimal' ? 'low' : level)
+
+/** Log text for a thinking level, naming the requested level whenever a slot remapped it. */
+export const describeThinkingLevel = (effective: string, requested: string): string =>
+  effective === requested ? effective : `${effective} (requested: ${requested})`
